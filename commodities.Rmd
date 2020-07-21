@@ -1,0 +1,157 @@
+---
+title: "Commodities"
+author: "Samar"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+#comparision function
+```{r}
+# Global price of WTI Crude (POILWTIUSDM)
+# Global price of Copper© (PCOPPUSDM)
+# Global Price Index of All Commodities© (PALLFNFINDEXQ)
+# Global price of Corn© (PMAIZMTUSDM)
+# Global price of Iron Ore© (PIORECRUSDM)
+# Global price of Aluminum© (PALUMUSDM)
+# Global price of Wheat© (PWHEAMTUSDM)
+# Global price of Cotton© (PCOTTINDUSDM)
+# Global price of Rubber© (PRUBBUSDM)
+# Global price of Uranium© (PURANUSDM)
+# Global price of Nickel© (PNICKUSDM)
+# Global price of Zinc© (PZINCUSDM)
+# Global price of Coffee, Other Mild Arabica© (PCOFFOTMUSDM)
+# Global price of Barley© (PBARLUSDM)
+# Global price of Bananas© (PBANSOPUSDM)
+# Global price of Energy index© (PNRGINDEXM)
+# Global price of Metal index© (PMETAINDEXM)
+# Global price of Rice, Thailand© (PRICENPQUSDM)
+library(tidyquant)
+library(htmltools)
+library(highcharter)
+
+#Getting Data:
+
+Crude <- tq_get(get = "economic.data", "POILWTIUSDM", from = "1980-01-01")
+Cotten <- tq_get(get = "economic.data", "PCOTTINDUSDM", from = "1980-01-01")
+Copper<-tq_get(get = "economic.data", "PCOPPUSDM", from = "1980-01-01")
+All_Commodities<-tq_get(get = "economic.data", "PALLFNFINDEXQ", from = "1980-01-01")
+
+Corn<-tq_get(get = "economic.data", "PMAIZMTUSDM", from = "1980-01-01")
+Iron_Ore<-tq_get(get = "economic.data", "PIORECRUSDM", from = "1980-01-01")
+Aluminum<-tq_get(get = "economic.data", "PALUMUSDM", from = "1980-01-01")
+Wheat<-tq_get(get = "economic.data", "PWHEAMTUSDM", from = "1980-01-01")
+Rubber<-tq_get(get = "economic.data", "PRUBBUSDM", from = "1980-01-01")
+Uranium<-tq_get(get = "economic.data", "PURANUSDM", from = "1980-01-01")
+Nickel<-tq_get(get = "economic.data", "PNICKUSDM", from = "1980-01-01")
+Zinc<-tq_get(get = "economic.data", "PZINCUSDM", from = "1980-01-01")
+Coffee<-tq_get(get = "economic.data", "PCOFFOTMUSDM", from = "1980-01-01")
+Bananas<-tq_get(get = "economic.data", "PBANSOPUSDM", from = "1980-01-01")
+Energy<-tq_get(get = "economic.data", "PNRGINDEXM", from = "1980-01-01")
+Metal<-tq_get(get = "economic.data", "PMETAINDEXM", from = "1980-01-01")
+Rice<-tq_get(get = "economic.data", "PRICENPQUSDM", from = "1980-01-01")
+
+
+
+
+Crude$year <- format(as.Date(Crude$date, format="%d/%m/%Y"),"%Y")
+Crude$year <- as.numeric(as.character(Crude$year))
+Crude$date <- as.character(Crude$date)
+
+highchart() %>%
+  hc_add_series_df(Crude, type = "line", x = date, y =  price) %>%
+  hc_xAxis(categories = Crude$year) %>%
+  hc_title(text = "Global price of WTI Crude") %>%
+  hc_tooltip(crosshairs = list(enabled=TRUE, color="#CDC673"), backgroundColor = "#f0f0f0",
+             shared = TRUE, borderWidth = .1) %>%
+  hc_yAxis(title = list(text = "Index"))   %>%
+  hc_add_theme(hc_theme_google()) %>%
+  hc_legend(enabled = FALSE) %>%
+  hc_exporting(enabled = TRUE)
+
+CrudeOil <- tq_get(get = "economic.data", "POILWTIUSDM", from = "1980-01-01")
+
+#Sideby Side Function:
+
+plot <- function(x, y){
+
+  x$year <- format(as.Date(x$date, format="%d/%m/%Y"),"%Y")
+  x$year <- as.numeric(as.character(x$year))
+  x$date <- as.character(x$date)
+
+h1 <- highchart() %>%
+  hc_add_series_df(x, type = "area", x = date, y =  price) %>%
+  hc_xAxis(categories = x$year) %>%
+  hc_tooltip(crosshairs = list(enabled=TRUE, color="#CDC673"), backgroundColor = "#f0f0f0",
+             shared = TRUE, borderWidth = .1) %>%
+  hc_yAxis(title = list(text = "Global Price Index"))   %>%
+  hc_add_theme(hc_theme_google()) %>%
+  hc_legend(enabled = FALSE) %>%
+  hc_exporting(enabled = TRUE)
+
+y$year <- format(as.Date(y$date, format="%d/%m/%Y"),"%Y")
+y$year <- as.numeric(as.character(y$year))
+y$date <- as.character(y$date)
+
+h2 <- highchart() %>%
+  hc_add_series_df(y, type = "area", x = date, y =  price) %>%
+  hc_xAxis(categories = y$year) %>%
+  hc_tooltip(crosshairs = list(enabled=TRUE, color="#CDC673"), backgroundColor = "#f0f0f0",
+             shared = TRUE, borderWidth = .1) %>%
+  hc_colors("red") %>%
+  hc_yAxis(title = list(text = "Global Price Index"))   %>%
+  hc_add_theme(hc_theme_google()) %>%
+  hc_legend(enabled = FALSE) %>%
+  hc_exporting(enabled = TRUE)
+
+hw_grid(h1, h2, ncol=2) %>% browsable()
+}
+
+
+plot(CrudeOil, Copper)
+plot(CrudeOil,Cotten)
+```
+
+#single Indicator
+```{r}
+plot1 <- function(x){
+
+
+x$year <- format(as.Date(x$date, format="%d/%m/%Y"),"%Y")
+x$year <- as.numeric(as.character(x$year))
+x$date <- as.character(x$date)
+
+h1 <- highchart() %>%
+  hc_add_series_df(x, type = "area", x = date, y =  price) %>%
+  hc_xAxis(categories = x$year) %>%
+  hc_tooltip(crosshairs = list(enabled=TRUE, color="#CDC673"), backgroundColor = "#f0f0f0",
+             shared = TRUE, borderWidth = .1) %>%
+  hc_yAxis(title = list(text = "Global Price"))   %>%
+  hc_add_theme(hc_theme_google()) %>%
+  hc_legend(enabled = FALSE) %>%
+  hc_exporting(enabled = TRUE)
+
+hw_grid(h1) %>% browsable()
+}
+plot1(CrudeOil)
+plot1(Copper)
+plot1(All_Commodities)
+plot1(Corn)
+plot1(Iron_Ore)
+plot1(Aluminum)
+plot1(Wheat)
+plot1(Rubber)
+plot1(Uranium)
+plot1(Nickel)
+plot1(Zinc)
+plot1(Bananas)
+plot1(Energy)
+plot1(Metal)
+plot1(Rice)
+
+
+
+```
+
